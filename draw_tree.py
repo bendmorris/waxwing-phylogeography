@@ -11,17 +11,18 @@ try:
     gene, filename = sys.argv[1:3]
     draw_to_file = True
 
-    def draw(x):
+    def draw(x, y=''):
         import matplotlib.pyplot as plt
         plt.figure(figsize=(12,6))
         axes = plt.axes(frameon=False)
         axes.get_xaxis().set_visible(False)
         axes.get_yaxis().set_visible(False)
         bp.draw(x, do_show=False, axes=axes)
-        plt.savefig(filename)
+        base, extension = '.'.join(filename.split('.')[:-1]), filename.split('.')[-1]
+        plt.savefig(base + y + '.' + extension)
 except:
     gene = 'co1'
-    draw = lambda x: bp.draw_ascii(x)
+    draw = lambda x, y='': bp.draw_ascii(x)
     draw_to_file = False
 
 samples = {}
@@ -56,9 +57,9 @@ draw(tree)
 cedars = tree.find_elements(lambda x: x.name.startswith('Bombycilla cedrorum'))
 cedar_root = bp.Newick.Tree(root=tree.common_ancestor(cedars))
 cedar_root.root.branch_length = 0
-bp._utils.draw_ascii(cedar_root)
+draw(cedar_root, '_cedar')
 
 bohemians = tree.find_elements(lambda x: x.name.startswith('Bombycilla garrulus'))
 bohemian_root = bp.Newick.Tree(root=tree.common_ancestor(bohemians))
 bohemian_root.root.branch_length = 0
-bp._utils.draw_ascii(bohemian_root)
+draw(bohemian_root, '_bohemian')
