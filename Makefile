@@ -1,4 +1,4 @@
-all : bombycillidae.newick
+all : bombycillidae.png
 
 bombycillidae.fasta: bombycilla.fasta phainopepla.fasta phainoptila.fasta
 	cat bombycilla.fasta phainopepla.fasta phainoptila.fasta > bombycillidae.fasta
@@ -13,3 +13,6 @@ bombycillidae.newick: bombycillidae.phy
 	rm RAxML_*.bombycillidae; \
 	raxmlHPC -m GTRCAT -n bombycillidae -p 10000 -s bombycillidae.phy; \
 	mv RAxML_result.bombycillidae bombycillidae.newick
+
+bombycillidae.png: bombycillidae.newick draw_tree.py
+	python draw_tree.py bombycillidae.png

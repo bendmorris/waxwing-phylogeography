@@ -1,4 +1,17 @@
 import Bio.Phylo as bp
+import sys
+
+try:
+    filename = sys.argv[1]
+    def draw(x):
+        import matplotlib.pyplot as plt
+        axes = plt.axes(frameon=False)
+        axes.get_xaxis().set_visible(False)
+        axes.get_yaxis().set_visible(False)
+        bp.draw(x, do_show=False, axes=axes)
+        plt.savefig(filename, dpi=100)
+except:
+    draw = lambda x: bp.draw_ascii(x)
 
 samples = {}
 
@@ -18,7 +31,8 @@ for sample, name in samples.iteritems():
     tree_string = tree_string.replace(sample, "'%s'" % name)
 
 tree = bp.NewickIO.Parser.from_string(tree_string).parse().next()
-bp._utils.draw_ascii(tree)
+tree.name = 'Waxwings and silky-flycatchers'
+draw(tree)
 
 cedars = tree.find_elements('Bombycilla cedrorum')
 cedar_root = bp.Newick.Tree(root=tree.common_ancestor(cedars))
