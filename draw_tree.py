@@ -3,6 +3,8 @@ import sys
 
 try:
     filename = sys.argv[1]
+    draw_to_file = True
+
     def draw(x):
         import matplotlib.pyplot as plt
         axes = plt.axes(frameon=False)
@@ -12,9 +14,10 @@ try:
         plt.savefig(filename, dpi=100)
 except:
     draw = lambda x: bp.draw_ascii(x)
+    draw_to_file = False
 
 samples = {}
-
+locations = {}
 with open('bombycillidae.fasta') as input_file:
     for line in input_file:
         if line[0] == '>':
@@ -22,24 +25,31 @@ with open('bombycillidae.fasta') as input_file:
             sample_name = '.'.join(parts[:2])
             species_name = ' '.join(parts[2:])
             samples[sample_name] = species_name
+with open('sample_locations') as input_file:
+    for line in input_file:
+        line = line.strip()
+        if not line: continue
+        sample_name, _, location = line.split(':')
+        locations[sample_name] = location
 
 
 with open('bombycillidae.newick') as tree_file:
     tree_string = tree_file.read()
 
 for sample, name in samples.iteritems():
-    tree_string = tree_string.replace(sample, "'%s'" % name)
+    tree_string = tree_string.replace(sample, "'%s'" % (name + 
+        (' (%s)' % locations[sample] if (not draw_to_file) and sample in locations else '')))
 
 tree = bp.NewickIO.Parser.from_string(tree_string).parse().next()
 tree.name = 'Waxwings and silky-flycatchers'
 draw(tree)
 
-cedars = tree.find_elements('Bombycilla cedrorum')
+cedars = tree.find_elements(lambda x: x.name.startswith('Bombycilla cedrorum'))
 cedar_root = bp.Newick.Tree(root=tree.common_ancestor(cedars))
 cedar_root.root.branch_length = 0
 bp._utils.draw_ascii(cedar_root)
 
-bohemians = tree.find_elements('Bombycilla garrulus')
+bohemians = tree.find_elements(lambda x: x.name.startswith('Bombycilla garrulus'))
 bohemian_root = bp.Newick.Tree(root=tree.common_ancestor(bohemians))
 bohemian_root.root.branch_length = 0
 bp._utils.draw_ascii(bohemian_root)
