@@ -1,7 +1,7 @@
 all : bombycillidae.png
 
-bombycillidae.fasta: bombycilla.fasta phainopepla.fasta phainoptila.fasta
-	cat bombycilla.fasta phainopepla.fasta phainoptila.fasta > bombycillidae.fasta
+bombycillidae.fasta: $(wildcard *_co1.fasta)
+	cat *_co1.fasta > bombycillidae.fasta
 
 bombycillidae.aln: bombycillidae.fasta
 	muscle -in bombycillidae.fasta -out bombycillidae.aln
