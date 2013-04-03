@@ -1,7 +1,8 @@
 all : bombycillidae_co1.png bombycillidae_cytb.png
 
+.PHONY : clean
 clean :
-	rm RAxML_* *.aln *.phy *.phy.reduced *.newick *.png
+	-rm RAxML_* bombicillidae_*
 
 .SECONDEXPANSION:
 bombycillidae_%.fasta: $$(wildcard *_$$*.fasta)
