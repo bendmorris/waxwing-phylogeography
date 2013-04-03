@@ -1,18 +1,22 @@
-all : bombycillidae.png
+all : bombycillidae_co1.png bombycillidae_cytb.png
 
-bombycillidae.fasta: $(wildcard *_co1.fasta)
-	cat *_co1.fasta > bombycillidae.fasta
+clean :
+	rm RAxML_* *.aln *.phy *.phy.reduced *.newick *.png
 
-bombycillidae.aln: bombycillidae.fasta
-	muscle -in bombycillidae.fasta -out bombycillidae.aln
+.SECONDEXPANSION:
+bombycillidae_%.fasta: $$(wildcard *_$$*.fasta)
+	cat $^ > $@
 
-bombycillidae.phy: bombycillidae.aln
-	python -c "import Bio.AlignIO as aio; aio.convert('bombycillidae.aln','fasta','bombycillidae.phy','phylip')"
+bombycillidae_%.aln: bombycillidae_%.fasta
+	muscle -in $< -out $@
 
-bombycillidae.newick: bombycillidae.phy
-	rm RAxML_*.bombycillidae; \
-	raxmlHPC -m GTRCAT -n bombycillidae -p 10000 -s bombycillidae.phy; \
-	mv RAxML_result.bombycillidae bombycillidae.newick
+bombycillidae_%.phy: bombycillidae_%.aln
+	python -c "import Bio.AlignIO as aio; aio.convert('$<','fasta','$@','phylip')"
 
-bombycillidae.png: bombycillidae.newick draw_tree.py
-	python draw_tree.py bombycillidae.png
+bombycillidae_%.newick: bombycillidae_%.phy
+	rm RAxML_*.bombycillidae_$*; \
+	raxmlHPC -m GTRCAT -n bombycillidae_$* -p 10000 -s $<; \
+	mv RAxML_result.bombycillidae_$* $@
+
+bombycillidae_%.png: bombycillidae_%.newick draw_tree.py
+	python draw_tree.py $* $@
