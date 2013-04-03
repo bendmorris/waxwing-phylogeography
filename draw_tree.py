@@ -1,26 +1,32 @@
+''' 
+Usage: python draw_tree.py [gene_name] [image_file.png]
+
+If run without arguments, gene will default to 'co1' and the result will be 
+printed to stdout instead of saving as an image file.
+'''
 import Bio.Phylo as bp
 import sys
 
 try:
-    filename = sys.argv[1]
+    gene, filename = sys.argv[1:3]
     draw_to_file = True
 
     def draw(x):
         import matplotlib.pyplot as plt
         plt.figure(figsize=(12,6))
-        #axes = plt.axes(frameon=False)
-        axes = plt.axes()
-        #axes.get_xaxis().set_visible(False)
-        #axes.get_yaxis().set_visible(False)
+        axes = plt.axes(frameon=False)
+        axes.get_xaxis().set_visible(False)
+        axes.get_yaxis().set_visible(False)
         bp.draw(x, do_show=False, axes=axes)
         plt.savefig(filename)
 except:
+    gene = 'co1'
     draw = lambda x: bp.draw_ascii(x)
     draw_to_file = False
 
 samples = {}
 locations = {}
-with open('bombycillidae.fasta') as input_file:
+with open('bombycillidae_%s.fasta' % gene) as input_file:
     for line in input_file:
         if line[0] == '>':
             parts = line[1:].strip().split('.')
@@ -35,7 +41,7 @@ with open('sample_locations') as input_file:
         locations[sample_name] = location
 
 
-with open('bombycillidae.newick') as tree_file:
+with open('bombycillidae_%s.newick' % gene) as tree_file:
     tree_string = tree_file.read()
 
 for sample, name in samples.iteritems():

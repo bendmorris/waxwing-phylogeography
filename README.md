@@ -6,6 +6,4 @@ To run all analyses:
 
     make
 
-To visualize the results:
-
-    python draw_tree.py
+Results will be saved as PNG images in the working directory.
