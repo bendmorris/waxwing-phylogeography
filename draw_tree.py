@@ -7,11 +7,13 @@ try:
 
     def draw(x):
         import matplotlib.pyplot as plt
-        axes = plt.axes(frameon=False)
-        axes.get_xaxis().set_visible(False)
-        axes.get_yaxis().set_visible(False)
+        plt.figure(figsize=(12,6))
+        #axes = plt.axes(frameon=False)
+        axes = plt.axes()
+        #axes.get_xaxis().set_visible(False)
+        #axes.get_yaxis().set_visible(False)
         bp.draw(x, do_show=False, axes=axes)
-        plt.savefig(filename, dpi=100)
+        plt.savefig(filename)
 except:
     draw = lambda x: bp.draw_ascii(x)
     draw_to_file = False
@@ -29,7 +31,7 @@ with open('sample_locations') as input_file:
     for line in input_file:
         line = line.strip()
         if not line: continue
-        sample_name, _, location = line.split(':')
+        sample_name, _, location = line.split(':')[:3]
         locations[sample_name] = location
 
 
@@ -38,7 +40,8 @@ with open('bombycillidae.newick') as tree_file:
 
 for sample, name in samples.iteritems():
     tree_string = tree_string.replace(sample, "'%s'" % (name + 
-        (' (%s)' % locations[sample] if (not draw_to_file) and sample in locations else '')))
+        (' %s (%s)' % (sample, locations[sample]) if (not draw_to_file) and sample in locations 
+                                                  else '')))
 
 tree = bp.NewickIO.Parser.from_string(tree_string).parse().next()
 tree.name = 'Waxwings and silky-flycatchers'
