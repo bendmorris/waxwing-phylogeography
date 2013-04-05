@@ -1,14 +1,14 @@
 ''' 
-Usage: python draw_tree.py [gene_name] [image_file.png]
+Usage: python draw_tree.py [image_file.png]
 
-If run without arguments, gene will default to 'co1' and the result will be 
-printed to stdout instead of saving as an image file.
+If run without arguments, the result will be printed to stdout instead of 
+saving as an image file.
 '''
 import Bio.Phylo as bp
 import sys
 
 try:
-    gene, filename = sys.argv[1:3]
+    filename = sys.argv[1]
     draw_to_file = True
 
     def draw(x, y=''):
@@ -21,13 +21,12 @@ try:
         base, extension = '.'.join(filename.split('.')[:-1]), filename.split('.')[-1]
         plt.savefig(base + y + '.' + extension)
 except:
-    gene = 'co1'
     draw = lambda x, y='': bp.draw_ascii(x)
     draw_to_file = False
 
 samples = {}
 locations = {}
-with open('bombycillidae_%s.fasta' % gene) as input_file:
+with open('bombycillidae.fasta') as input_file:
     for line in input_file:
         if line[0] == '>':
             parts = line[1:].strip().split('.')
@@ -42,7 +41,7 @@ with open('sample_locations') as input_file:
         locations[sample_name] = location
 
 
-with open('bombycillidae_%s.newick' % gene) as tree_file:
+with open('bombycillidae.newick') as tree_file:
     tree_string = tree_file.read()
 
 for sample, name in samples.iteritems():
@@ -51,12 +50,12 @@ for sample, name in samples.iteritems():
                                                   else '')))
 
 tree = bp.NewickIO.Parser.from_string(tree_string).parse().next()
-tree.name = 'Candidates for family Bombycillidae (%s)' % gene
+tree.name = 'Candidates for family Bombycillidae'
 draw(tree)
 
 for subtree, extn in (('Bombycilla cedrorum', '_cedar'), ('Bombycilla garrulus', '_bohemian')):
     matches = tree.find_elements(lambda x: x.name.startswith(subtree))
     root = bp.Newick.Tree(root=tree.common_ancestor(matches))
-    root.name = subtree + ' (%s)' % gene
+    root.name = subtree
     root.root.branch_length = 0
     draw(root, extn)
