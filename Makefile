@@ -1,8 +1,10 @@
-all : bombycillidae_co1.png bombycillidae_cytb.png
+all : bombycillidae_co1.png
 
 .PHONY : clean
 clean :
 	-rm RAxML_* bombicillidae_*
+
+.SECONDARY:
 
 .SECONDEXPANSION:
 bombycillidae_%.fasta: $$(wildcard *_$$*.fasta)
@@ -19,5 +21,5 @@ bombycillidae_%.newick: bombycillidae_%.phy
 	raxmlHPC -m GTRCAT -n bombycillidae_$* -p 10000 -s $<; \
 	mv RAxML_result.bombycillidae_$* $@
 
-bombycillidae_%.png: bombycillidae_%.newick draw_tree.py
+bombycillidae_%.png: bombycillidae_%.newick draw_tree.py sample_locations
 	python draw_tree.py $* $@
