@@ -1,3 +1,5 @@
+gene = co1
+
 all : bombycillidae.png
 
 .PHONY : clean
@@ -7,7 +9,7 @@ clean :
 .SECONDARY:
 
 .SECONDEXPANSION:
-bombycillidae.fasta: *_co1.fasta
+bombycillidae.fasta: *_$(gene).fasta
 	cat $^ > $@
 
 bombycillidae.aln: bombycillidae.fasta
@@ -23,3 +25,9 @@ bombycillidae.newick: bombycillidae.phy
 
 bombycillidae.png: bombycillidae.newick draw_tree.py sample_locations bombycillidae.fasta
 	python draw_tree.py $@
+
+filled_sample_locations: sample_locations get_location.py fill_sample_locations.py
+	python fill_sample_locations.py > filled_sample_locations
+
+sample_map.png: filled_sample_locations sample_map.py
+	python sample_map.py sample_map.png
