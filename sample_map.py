@@ -26,7 +26,7 @@ all_species = sorted(list(set(samples.values())))
 plt.figure(dpi=500)
 
 m = Basemap(projection='cyl',llcrnrlat=30,urcrnrlat=90,
-            llcrnrlon=-180,urcrnrlon=180,resolution='l')
+            llcrnrlon=-180,urcrnrlon=180,resolution='i')
 m.drawmapboundary(linewidth=0.25)
 m.drawcoastlines(color='#6D5F47', linewidth=.1)
 m.drawcountries(color='#6D5F47', linewidth=.1)
