@@ -50,12 +50,14 @@ for sample, name in samples.iteritems():
                                                   else '')))
 
 tree = bp.NewickIO.Parser.from_string(tree_string).parse().next()
-tree.name = 'Candidates for family Bombycillidae'
+tree.name = 'Bombycillidae'
+tree.root_at_midpoint()
 draw(tree)
 
-for subtree, extn in (('Bombycilla cedrorum', '_cedar'), ('Bombycilla garrulus', '_bohemian')):
-    matches = tree.find_elements(lambda x: x.name.startswith(subtree))
-    root = bp.Newick.Tree(root=tree.common_ancestor(matches))
-    root.name = subtree
-    root.root.branch_length = 0
-    draw(root, extn)
+for subtree_name, extn in (('Bombycilla cedrorum', '_cedar'), ('Bombycilla garrulus', '_bohemian')):
+    matches = tree.find_elements(lambda x: x.name.startswith(subtree_name))
+    subtree = bp.Newick.Tree(root=tree.common_ancestor(matches))
+    subtree.name = subtree_name
+    subtree.root.branch_length = 0
+    subtree.root_at_midpoint()
+    draw(subtree, extn)
