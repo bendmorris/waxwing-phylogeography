@@ -3,6 +3,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 import sys
 import random
+import os
+import fnmatch
 
 
 if len(sys.argv) > 1:
@@ -13,13 +15,16 @@ colors = {'Bombycilla garrulus': 'Blue',
           'Bombycilla cedrorum': 'Red',
           None: 'Yellow'}
 samples = {}
-with open('bombycillidae.fasta') as input_file:
-    for line in input_file:
-        if line[0] == '>':
-            parts = line[1:].strip().split('.')
-            sample_name = '.'.join(parts[:2])
-            species_name = ' '.join(parts[2:])
-            samples[sample_name] = species_name
+input_files = [file for file in os.listdir('.') 
+               if fnmatch.fnmatch(file, 'bombycillidae_*.fasta')]
+for input_filename in input_files:
+    with open(input_filename) as input_file:
+        for line in input_file:
+            if line[0] == '>':
+                parts = line[1:].strip().split('.')
+                sample_name = '.'.join(parts[:2])
+                species_name = ' '.join(parts[2:])
+                samples[sample_name] = species_name
             
 all_species = sorted(list(set(samples.values())))
 

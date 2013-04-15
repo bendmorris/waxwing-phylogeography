@@ -1,30 +1,30 @@
-gene = co1
+gene = cytb
 
-all : bombycillidae.png
+all : bombycillidae_$(gene).png
 
 .PHONY : clean
 clean :
-	-rm -f RAxML_* bombycillidae.*
+	-rm -f RAxML_* bombycillidae_*.aln bombycillidae_*.phy bombycillidae_*.newick
 
 .SECONDARY:
 
 .SECONDEXPANSION:
-bombycillidae.fasta: *_$(gene).fasta
+bombycillidae_$(gene).fasta: *_$(gene).fasta
 	cat $^ > $@
 
-bombycillidae.aln: bombycillidae.fasta
+bombycillidae_$(gene).aln: bombycillidae_$(gene).fasta
 	muscle -in $< -out $@
 
-bombycillidae.phy: bombycillidae.aln
+bombycillidae_$(gene).phy: bombycillidae_$(gene).aln
 	python -c "import Bio.AlignIO as aio; aio.convert('$<','fasta','$@','phylip')"
 
-bombycillidae.newick: bombycillidae.phy
+bombycillidae_$(gene).newick: bombycillidae_$(gene).phy
 	rm -f RAxML_*.bombycillidae; \
 	raxmlHPC -m GTRCAT -n bombycillidae -p 10000 -s $<; \
 	mv RAxML_result.bombycillidae $@
 
-bombycillidae.png: bombycillidae.newick draw_tree.py sample_locations bombycillidae.fasta
-	python draw_tree.py $@
+bombycillidae_$(gene).png: bombycillidae_$(gene).newick draw_tree.py sample_locations bombycillidae_$(gene).fasta
+	python draw_tree.py $(gene) $@
 
 filled_sample_locations: sample_locations get_location.py fill_sample_locations.py
 	python fill_sample_locations.py > filled_sample_locations

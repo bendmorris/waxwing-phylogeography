@@ -8,7 +8,8 @@ import Bio.Phylo as bp
 import sys
 
 try:
-    filename = sys.argv[1]
+    gene = sys.argv[1]
+    filename = sys.argv[2]
     draw_to_file = True
 
     def draw(x, y=''):
@@ -21,12 +22,13 @@ try:
         base, extension = '.'.join(filename.split('.')[:-1]), filename.split('.')[-1]
         plt.savefig(base + y + '.' + extension)
 except:
+    gene = 'co1'
     draw = lambda x, y='': bp.draw_ascii(x)
     draw_to_file = False
 
 samples = {}
 locations = {}
-with open('bombycillidae.fasta') as input_file:
+with open('bombycillidae_%s.fasta' % gene) as input_file:
     for line in input_file:
         if line[0] == '>':
             parts = line[1:].strip().split('.')
@@ -41,13 +43,13 @@ with open('sample_locations') as input_file:
         locations[sample_name] = location
 
 
-with open('bombycillidae.newick') as tree_file:
+with open('bombycillidae_%s.newick' % gene) as tree_file:
     tree_string = tree_file.read()
 
 for sample, name in samples.iteritems():
     tree_string = tree_string.replace(sample, "'%s'" % (name + 
-        (' %s (%s)' % (sample, locations[sample]) if (not draw_to_file) and sample in locations 
-                                                  else '')))
+        (' (%s)' % (locations[sample]) if sample in locations 
+                                       else '')))
 
 tree = bp.NewickIO.Parser.from_string(tree_string).parse().next()
 tree.name = 'Bombycillidae'
